@@ -1,16 +1,14 @@
 <template>
   <div id="app">
-    <SessaoDisfuncao />
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import SessaoDisfuncao from './components/SessaoDisfuncao.vue';
 
 export default {
   name: 'App',
   components: {
-    SessaoDisfuncao,
   }
 }
 </script>
