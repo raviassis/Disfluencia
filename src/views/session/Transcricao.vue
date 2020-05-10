@@ -68,6 +68,7 @@
 </template>
 
 <script >
+import Transcriptor from '../../services/transcriptorService';
 export default {
     name: 'Transcricao',
     components: {
@@ -84,38 +85,31 @@ export default {
     computed: {
         SI: function () {
             const a = this?.amostra;
-            if(!a || typeof a !== "string") return;
-            return (a.split("~~~~~~~").length-1);
+            return Transcriptor.intelligentSegment(a);
         },
         IT: function () {
             const a = this?.amostra;
-            if(!a || typeof a !== "string") return;
-            return (a.replace("//","!").split("!").length-1);
+            return Transcriptor.therapistInterruption(a);
         },
         HES: function () {
             const a = this?.amostra;
-            if(!a || typeof a !== "string") return;
-            return (a.split("#").length-1);
+            return Transcriptor.hesitation(a);
         },
         PA: function () {
             const a = this?.amostra;
-            if(!a || typeof a !== "string") return;
-            return (a.replace("________","@").split("@").length-1);
+            return Transcriptor.respite(a);
         },
         BLOCK: function () {
             const a = this?.amostra;
-            if(!a || typeof a !== "string") return;
-            return (a.split("/").length-1);
+            return Transcriptor.block(a);
         },
         PRO: function () {
             const a = this?.amostra;
-            if(!a || typeof a !== "string") return;
-            return (a.split("_").length-1);
+            return Transcriptor.extension(a);
         },
         IP: function () {
             const a = this?.amostra;
-            if(!a || typeof a !== "string") return;
-            return (a.replace("/ /","&").split("&").length-1);
+            return Transcriptor.wordIntrusion(a);
         },
     },
     methods: {
