@@ -2,7 +2,7 @@
     <div class="sessaoDisfuncao container-fluid">
         <div class="row mt-3">
             <div class="col-md-10 form-group">
-                <input v-model="nameSession" type="text" class="form-control" placeholder="Nome da sessão">
+                <input v-model="session.name" type="text" class="form-control" placeholder="Nome da sessão">
             </div>
             <div class="col-md-2 form-group">
                 <button 
@@ -14,11 +14,11 @@
         </div>
         <div class="row mb-5">
             <div class="col-md-7">
-                <AmostraFala v-model="amostra" />
+                <AmostraFala v-model="session.speechSample" />
             </div>
 
             <div class="col-md-5">
-                <Transcricao v-bind:amostra="amostra"/>
+                <Transcricao v-bind:amostra="session.speechSample"/>
                 
             </div>
         </div>
@@ -28,7 +28,7 @@
                     class="form-control mb-5"
                     rows="5"
                     placeholder="Escreva aqui suas anotações"
-                    v-model="annotation">
+                    v-model="session.annotation">
                 </textarea>
             </div>
             
@@ -51,16 +51,33 @@ export default {
     },
     data: function() {
         return {
-            nameSession: '',
-            amostra: '',
-            annotation: '',
+            newSession: true,
+            session: {
+                name: '',
+                speechSample: '',
+                annotation: ''
+            },
         };
+    },
+    beforeMount: async function() {
+        const id = this.$route.params.id;
+        if (id) {
+            this.newSession = false;
+            this.session = (await this.$http.get(`/sessions/${id}`)).data;
+        }
     },
     methods: {
         save() {
-            console.log(this.createRequestBody());
-            const session = this.createRequestBody();
-            this.$http.post('/session', session)
+            if(this.newSession) {
+                this.saveNewSession();
+            }
+            else {
+                this.editSession();
+            }
+        },
+        saveNewSession() {
+            const session = this.createRequestBodyNewSession();
+            this.$http.post('/sessions', session)
                     .then(() => {
                         alert('Sessão salva com sucesso!');
                         this.$router.push('/');
@@ -74,12 +91,25 @@ export default {
                         }
                     });
         },
-        createRequestBody(){
+        editSession() {
+            const session = this.createRequestBodyEditSession();
+            console.log(session);
+        },
+        createRequestBodyNewSession(){
             return {
-                name: this.nameSession,
-                speechSample: this.amostra,
-                annotation: this.annotation,
-                transcription: Transcriptor.transcript(this.amostra)
+                name: this.session.name,
+                speechSample: this.session.speechSample,
+                annotation: this.session.annotation,
+                transcription: Transcriptor.transcript(this.session.speechSample)
+            };
+        },
+        createRequestBodyEditSession(){
+            return {
+                _id: this.session._id,
+                name: this.session.name,
+                speechSample: this.session.speechSample,
+                annotation: this.session.annotation,
+                transcription: Transcriptor.transcript(this.session.speechSample)
             };
         },
         tratarErroValidacao(err){
@@ -87,7 +117,7 @@ export default {
             alert(msg);
         },
         enabled(){
-            return this.nameSession && this.nameSession.trim().length > 0;
+            return this.session.name && this.session.name.trim().length > 0;
         }
     }
 }
