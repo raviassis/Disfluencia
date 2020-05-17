@@ -2,23 +2,23 @@
     <div class="sessaoDisfuncao container-fluid">
         <div class="row mt-3">
             <div class="col-md-10 form-group">
-                <input v-model="session.name" type="text" class="form-control" placeholder="Nome da sessão">
+                <input v-model="value.name" type="text" class="form-control" placeholder="Nome da sessão">
             </div>
             <div class="col-md-2 form-group">
                 <button 
                     class="btn btn-block"
                     v-bind:class="{'btn-success': enabled(), 'btn-light': !enabled()}"
-                    v-on:click="save()" 
+                    v-on:click="$emit('save')" 
                     :disabled="!enabled()">Salvar</button>
             </div>
         </div>
         <div class="row mb-5">
             <div class="col-md-7">
-                <AmostraFala v-model="session.speechSample" />
+                <AmostraFala v-model="value.speechSample" />
             </div>
 
             <div class="col-md-5">
-                <Transcricao v-bind:amostra="session.speechSample"/>
+                <Transcricao v-bind:amostra="value.speechSample"/>
                 
             </div>
         </div>
@@ -28,7 +28,7 @@
                     class="form-control mb-5"
                     rows="5"
                     placeholder="Escreva aqui suas anotações"
-                    v-model="session.annotation">
+                    v-model="value.annotation">
                 </textarea>
             </div>
             
@@ -39,7 +39,6 @@
 <script>
 import AmostraFala from './AmostraFala.vue';
 import Transcricao from './Transcricao.vue';
-import Transcriptor from '../../services/transcriptorService';
 export default {
     name: 'SessaoDisfuncao',
     components: {
@@ -47,77 +46,11 @@ export default {
         Transcricao,
     },
     props: {
-
-    },
-    data: function() {
-        return {
-            newSession: true,
-            session: {
-                name: '',
-                speechSample: '',
-                annotation: ''
-            },
-        };
-    },
-    beforeMount: async function() {
-        const id = this.$route.params.id;
-        if (id) {
-            this.newSession = false;
-            this.session = (await this.$http.get(`/sessions/${id}`)).data;
-        }
+        value: Object,
     },
     methods: {
-        save() {
-            if(this.newSession) {
-                this.saveNewSession();
-            }
-            else {
-                this.editSession();
-            }
-        },
-        saveNewSession() {
-            const session = this.createRequestBodyNewSession();
-            this.$http.post('/sessions', session)
-                    .then(() => {
-                        alert('Sessão salva com sucesso!');
-                        this.$router.push('/');
-                    })
-                    .catch((err) => {
-                        if(err.response.status == 422) {
-                            this.tratarErroValidacao(err.response.data);
-                        }
-                        else {                            
-                            alert('Ocorreu um erro inesperado ao salvar a sessão!');
-                        }
-                    });
-        },
-        editSession() {
-            const session = this.createRequestBodyEditSession();
-            console.log(session);
-        },
-        createRequestBodyNewSession(){
-            return {
-                name: this.session.name,
-                speechSample: this.session.speechSample,
-                annotation: this.session.annotation,
-                transcription: Transcriptor.transcript(this.session.speechSample)
-            };
-        },
-        createRequestBodyEditSession(){
-            return {
-                _id: this.session._id,
-                name: this.session.name,
-                speechSample: this.session.speechSample,
-                annotation: this.session.annotation,
-                transcription: Transcriptor.transcript(this.session.speechSample)
-            };
-        },
-        tratarErroValidacao(err){
-            const msg = err.errors?.map(e => e.message).reduce((s1, s2) => s1 + '\n' + s2, '');
-            alert(msg);
-        },
         enabled(){
-            return this.session.name && this.session.name.trim().length > 0;
+            return this.value.name && this.value.name.trim().length > 0;
         }
     }
 }
