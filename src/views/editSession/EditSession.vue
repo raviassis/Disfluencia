@@ -28,7 +28,18 @@ export default {
     methods: {
         editSession() {
             const session = this.createRequestBodyEditSession();
-            console.log(session);
+            this.$http.put('/sessions', session)
+                    .then(() => {
+                        alert('Sessão salva com sucesso!');
+                    })
+                    .catch((err) => {
+                        if(err.response.status == 422) {
+                            this.tratarErroValidacao(err.response.data);
+                        }
+                        else {                            
+                            alert('Ocorreu um erro inesperado ao salvar a sessão!');
+                        }
+                    });
         },
         createRequestBodyEditSession(){
             return {
@@ -38,6 +49,10 @@ export default {
                 annotation: this.session.annotation,
                 transcription: Transcriptor.transcript(this.session.speechSample)
             };
+        },
+        tratarErroValidacao(err){
+            const msg = err.errors?.map(e => e.message).reduce((s1, s2) => s1 + '\n' + s2, '');
+            alert(msg);
         },
     },
 }
