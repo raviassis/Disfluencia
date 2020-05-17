@@ -1,13 +1,24 @@
 <template>
     <div class="sessaoDisfuncao container-fluid">
-        <h3>Amostra de Fala</h3>
+        <div class="row mt-3">
+            <div class="col-md-10 form-group">
+                <input v-model="value.name" type="text" class="form-control" placeholder="Nome da sessão">
+            </div>
+            <div class="col-md-2 form-group">
+                <button 
+                    class="btn btn-block"
+                    v-bind:class="{'btn-success': enabled(), 'btn-light': !enabled()}"
+                    v-on:click="$emit('save')" 
+                    :disabled="!enabled()">Salvar</button>
+            </div>
+        </div>
         <div class="row mb-5">
             <div class="col-md-7">
-                <AmostraFala v-model="amostra" />
+                <AmostraFala v-model="value.speechSample" />
             </div>
 
             <div class="col-md-5">
-                <Transcricao v-bind:amostra="amostra"/>
+                <Transcricao v-bind:amostra="value.speechSample"/>
                 
             </div>
         </div>
@@ -16,7 +27,8 @@
                 <textarea 
                     class="form-control mb-5"
                     rows="5"
-                    placeholder="Escreva aqui suas anotações">
+                    placeholder="Escreva aqui suas anotações"
+                    v-model="value.annotation">
                 </textarea>
             </div>
             
@@ -34,14 +46,12 @@ export default {
         Transcricao,
     },
     props: {
-
-    },
-    data: function() {
-        return {
-            amostra: '',
-        };
+        value: Object,
     },
     methods: {
+        enabled(){
+            return this.value.name && this.value.name.trim().length > 0;
+        }
     }
 }
 

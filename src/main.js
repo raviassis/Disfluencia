@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import App from './App.vue'
 import VueRouter from 'vue-router'
-import Session from './views/session/Session.vue'
+import NewSession from './views/newSession/NewSession.vue'
+import EditSession from './views/editSession/EditSession.vue'
 import Home from './views/home/Home.vue'
 import axios from 'axios'
 
@@ -12,7 +13,8 @@ Vue.prototype.$http = axios
 
 const routes = [
   { path: '/', component: Home},
-  { path: '/session', component: Session}
+  { path: '/session', component: NewSession},
+  { path: '/session/:id', component: EditSession}
 ]
 
 const router = new VueRouter({
