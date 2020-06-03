@@ -5,7 +5,7 @@
 
       <div class="form">
         <form @submit="register()" autocomplete="off">
-             <p>
+          <p>
             <label class="form-label" for="form.name">Nome</label>
             <input class="form-control" id="form.name" v-model="form.name" type="text" />
           </p>
@@ -24,7 +24,15 @@
             </ul>
           </div>
 
-          <button class="btn btn-primary btn-form">Cadastrar</button>
+          <div class="form-footer">
+            <button class="btn btn-primary btn-form">Cadastrar</button>
+            <div class="go-back-login">
+              <p class="go-back-login-text">
+                Voltar para a tela de
+                <a href="#/login">login</a>
+              </p>
+            </div>
+          </div>
         </form>
       </div>
     </div>
@@ -52,16 +60,18 @@ export default {
     register: function() {
       if (this.isFormValid()) {
         const user = this.createRequestBodyNewUser();
-        console.log(user)
         this.$http
-          .post("/user", user)
+          .post("/users", user)
           .then(() => {
-            
             alert("Cadastro realizado com sucesso");
-            this.$router.push("/");
+            this.$router.push("/login");
           })
           .catch(() => {
-            alert("Ocorreu um erro inesperado ao salvar a sessão!");
+            if (err.response.status == 422) {
+              this.tratarErroValidacao(err.response.data);
+            } else {
+              alert("Ocorreu um erro inesperado ao se cadastrar no sistema");
+            }
           });
 
         this.clearFormFields();
@@ -70,7 +80,7 @@ export default {
 
     createRequestBodyNewUser() {
       return {
-        nome: this.form.name,
+        name: this.form.name,
         email: this.form.email,
         password: this.form.password
       };
@@ -83,8 +93,8 @@ export default {
         this.form.errors.push("A senha é obrigatória.");
       }
 
-      if(!this.form.name){
-         this.form.errors.push("O nome é obrigatório.");
+      if (!this.form.name) {
+        this.form.errors.push("O nome é obrigatório.");
       }
 
       if (!this.form.email) {
@@ -135,7 +145,16 @@ export default {
 .form-label {
   font-size: 1.5rem;
 }
-.btn-form {
+.form-footer {
   margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+.go-back-login {
+  display: flex;
+}
+.go-back-login-text {
+  padding-top: 7px;
+  margin-bottom: 0;
 }
 </style>

@@ -4,7 +4,7 @@
       <h1 class="form-header">Digite seu email e uma senha para fazer login!</h1>
 
       <div class="form">
-        <form @submit="login()" autocomplete="off">
+        <form autocomplete="off">
           <p>
             <label class="form-label" for="form.email">Email</label>
             <input class="form-control" id="form.email" v-model="form.email" type="email" />
@@ -20,7 +20,13 @@
             </ul>
           </div>
 
-          <button class="btn btn-primary btn-form">Login</button>
+          <div class="form-footer">
+            <button v-on:click="login()" class="btn btn-primary btn-form">Login</button>
+            <div class="not-registered">
+              <p class="not-registered-text">Não possui cadastro?</p>
+              <router-link class="btn btn-primary" to="/register">Cadastrar</router-link>
+            </div>
+          </div>
         </form>
       </div>
     </div>
@@ -47,25 +53,27 @@ export default {
     login: function() {
       if (this.isFormValid()) {
         const user = this.createRequestBodyNewUser();
-        console.log(user)
         this.$http
-          .post("/user", user)
-          .then(() => {
-            
-            alert("Bem vindo ao sistema");
+          .post("/users/login", user)
+          .then(userFound => {
             this.$router.push("/");
+            alert("Bem vindo ao sistema");
+            localStorage.setItem("email", userFound.data.email);
+            this.clearFormFields();
           })
-          .catch(() => {
-            alert("Ocorreu um erro inesperado ao salvar a sessão!");
+          .catch((err) => {
+            if (err.response.status == 422) {
+              this.tratarErroValidacao(err.response.data);
+            } else {
+              alert("Ocorreu um erro inesperado ao se cadastrar no sistema");
+            }
+            this.clearFormFields();
           });
-
-        this.clearFormFields();
       }
     },
 
     createRequestBodyNewUser() {
       return {
-        nome: this.form.name,
         email: this.form.email,
         password: this.form.password
       };
@@ -125,7 +133,17 @@ export default {
 .form-label {
   font-size: 1.5rem;
 }
-.btn-form {
+.form-footer {
   margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+.not-registered {
+  display: flex;
+}
+.not-registered-text {
+  padding-top: 7px;
+  padding-right: 14px;
+  margin-bottom: 0;
 }
 </style>

@@ -19,25 +19,42 @@ const routes = [
   {
     path: '/', component: Home,
     beforeEnter: (to, from, next) => {
-      next('/login');
+      if (localStorage.getItem('email')) {
+        next();
+      } else {
+        next('/login');
+      }
     }
   },
   {
     path: '*', component: Home,
     beforeEnter: (to, from, next) => {
-      next('/login');
+      if (localStorage.getItem('email')) {
+        next();
+      } else {
+        next('/login');
+      }
     }
   },
   {
     path: '/session', component: NewSession,
     beforeEnter: (to, from, next) => {
-      next('/login');
+      if (localStorage.getItem('email')) {
+        next();
+      } else {
+        next('/login');
+      }
+
     }
   },
   {
     path: '/session/:id', component: EditSession.$http,
     beforeEnter: (to, from, next) => {
-      next('/login');
+      if (localStorage.getItem('email')) {
+        next();
+      } else {
+        next('/login');
+      }
     }
   },
 ]
