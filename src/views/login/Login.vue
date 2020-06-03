@@ -58,7 +58,7 @@ export default {
           .then(userFound => {
             this.$router.push("/");
             alert("Bem vindo ao sistema");
-            localStorage.setItem("email", userFound.data.email);
+            sessionStorage.setItem("email", userFound.data.email);
             this.clearFormFields();
           })
           .catch((err) => {

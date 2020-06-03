@@ -19,7 +19,7 @@ const routes = [
   {
     path: '/', component: Home,
     beforeEnter: (to, from, next) => {
-      if (localStorage.getItem('email')) {
+      if (sessionStorage.getItem('email')) {
         next();
       } else {
         next('/login');
@@ -29,7 +29,7 @@ const routes = [
   {
     path: '*', component: Home,
     beforeEnter: (to, from, next) => {
-      if (localStorage.getItem('email')) {
+      if (sessionStorage.getItem('email')) {
         next();
       } else {
         next('/login');
@@ -39,7 +39,7 @@ const routes = [
   {
     path: '/session', component: NewSession,
     beforeEnter: (to, from, next) => {
-      if (localStorage.getItem('email')) {
+      if (sessionStorage.getItem('email')) {
         next();
       } else {
         next('/login');
@@ -50,7 +50,7 @@ const routes = [
   {
     path: '/session/:id', component: EditSession.$http,
     beforeEnter: (to, from, next) => {
-      if (localStorage.getItem('email')) {
+      if (sessionStorage.getItem('email')) {
         next();
       } else {
         next('/login');
