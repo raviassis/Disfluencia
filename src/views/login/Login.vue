@@ -1,14 +1,10 @@
 <template>
-  <div class="container-fluid container-register">
+  <div class="container-fluid container-login">
     <div class="container-form">
-      <h1 class="form-header">Digite seu email e uma senha para realizar o seu cadastro!</h1>
+      <h1 class="form-header">Digite seu email e uma senha para fazer login!</h1>
 
       <div class="form">
-        <form @submit="register()" autocomplete="off">
-          <p>
-            <label class="form-label" for="form.name">Nome</label>
-            <input class="form-control" id="form.name" v-model="form.name" type="text" />
-          </p>
+        <form autocomplete="off">
           <p>
             <label class="form-label" for="form.email">Email</label>
             <input class="form-control" id="form.email" v-model="form.email" type="email" />
@@ -25,12 +21,10 @@
           </div>
 
           <div class="form-footer">
-            <button class="btn btn-primary btn-form">Cadastrar</button>
-            <div class="go-back-login">
-              <p class="go-back-login-text">
-                Voltar para a tela de
-                <a href="#/login">login</a>
-              </p>
+            <button v-on:click="login()" class="btn btn-primary btn-form">Login</button>
+            <div class="not-registered">
+              <p class="not-registered-text">Não possui cadastro?</p>
+              <router-link class="btn btn-primary" to="/register">Cadastrar</router-link>
             </div>
           </div>
         </form>
@@ -42,12 +36,11 @@
 
 <script>
 export default {
-  name: "Register",
+  name: "Login",
   data: function() {
     return {
       form: {
         errors: [],
-        name: null,
         email: null,
         password: null
       }
@@ -57,30 +50,30 @@ export default {
   beforeMount: async function() {},
 
   methods: {
-    register: function() {
+    login: function() {
       if (this.isFormValid()) {
         const user = this.createRequestBodyNewUser();
         this.$http
-          .post("/users", user)
-          .then(() => {
-            alert("Cadastro realizado com sucesso");
-            this.$router.push("/login");
+          .post("/users/login", user)
+          .then(userFound => {
+            this.$router.push("/");
+            alert("Bem vindo ao sistema");
+            sessionStorage.setItem("email", userFound.data.email);
+            this.clearFormFields();
           })
-          .catch(() => {
+          .catch((err) => {
             if (err.response.status == 422) {
               this.tratarErroValidacao(err.response.data);
             } else {
               alert("Ocorreu um erro inesperado ao se cadastrar no sistema");
             }
+            this.clearFormFields();
           });
-
-        this.clearFormFields();
       }
     },
 
     createRequestBodyNewUser() {
       return {
-        name: this.form.name,
         email: this.form.email,
         password: this.form.password
       };
@@ -91,10 +84,6 @@ export default {
 
       if (!this.form.password) {
         this.form.errors.push("A senha é obrigatória.");
-      }
-
-      if (!this.form.name) {
-        this.form.errors.push("O nome é obrigatório.");
       }
 
       if (!this.form.email) {
@@ -116,7 +105,6 @@ export default {
     },
 
     clearFormFields: function() {
-      this.form.name = null;
       this.form.email = null;
       this.form.password = null;
     }
@@ -125,7 +113,7 @@ export default {
 </script>
 
 <style scoped>
-.container-register {
+.container-login {
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -150,11 +138,12 @@ export default {
   display: flex;
   justify-content: space-between;
 }
-.go-back-login {
+.not-registered {
   display: flex;
 }
-.go-back-login-text {
+.not-registered-text {
   padding-top: 7px;
+  padding-right: 14px;
   margin-bottom: 0;
 }
 </style>
