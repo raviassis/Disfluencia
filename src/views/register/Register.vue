@@ -5,6 +5,10 @@
 
       <div class="form">
         <form @submit="register()" autocomplete="off">
+             <p>
+            <label class="form-label" for="form.name">Nome</label>
+            <input class="form-control" id="form.name" v-model="form.name" type="text" />
+          </p>
           <p>
             <label class="form-label" for="form.email">Email</label>
             <input class="form-control" id="form.email" v-model="form.email" type="email" />
@@ -35,6 +39,7 @@ export default {
     return {
       form: {
         errors: [],
+        name: null,
         email: null,
         password: null
       }
@@ -47,9 +52,9 @@ export default {
     register: function() {
       if (this.isFormValid()) {
         const user = this.createRequestBodyNewUser();
-
+        console.log(user)
         this.$http
-          .post("/register", user)
+          .post("/user", user)
           .then(() => {
             
             alert("Cadastro realizado com sucesso");
@@ -65,6 +70,7 @@ export default {
 
     createRequestBodyNewUser() {
       return {
+        nome: this.form.name,
         email: this.form.email,
         password: this.form.password
       };
@@ -75,6 +81,10 @@ export default {
 
       if (!this.form.password) {
         this.form.errors.push("A senha é obrigatória.");
+      }
+
+      if(!this.form.name){
+         this.form.errors.push("O nome é obrigatório.");
       }
 
       if (!this.form.email) {
@@ -96,6 +106,7 @@ export default {
     },
 
     clearFormFields: function() {
+      this.form.name = null;
       this.form.email = null;
       this.form.password = null;
     }
