@@ -1,8 +1,12 @@
 <template>
-    <div class="container-fluid">
+    <div class="home container-fluid">
         <div class="row">
-            <div class="col">
+            <div class="col flex">
                 <h1>Disfluência</h1>
+                <div>
+                    Olá {{user.name}},
+                    <router-link to="/login">Sair</router-link>
+                </div>
             </div>
         </div>
         
@@ -28,11 +32,13 @@
 </template>
 
 <script>
+import authService from '../../services/authService';
 export default {
     name: 'Home',
     data: function() {
         return {
-            sessions: []
+            sessions: [],
+            user: authService.getUserLogged(),
         };
     },
     beforeMount: async function () {
@@ -45,5 +51,8 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+.home .flex {
+    display: flex;
+    justify-content: space-between;
+}
 </style>

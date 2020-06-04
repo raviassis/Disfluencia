@@ -56,16 +56,16 @@ export default {
         this.$http
           .post("/users/login", user)
           .then(userFound => {
-            this.$router.push("/");
+            sessionStorage.setItem("user", JSON.stringify(userFound.data));
             alert("Bem vindo ao sistema");
-            sessionStorage.setItem("email", userFound.data.email);
             this.clearFormFields();
+            this.$router.push("/");
           })
           .catch((err) => {
             if (err.response.status == 422) {
               this.tratarErroValidacao(err.response.data);
             } else {
-              alert("Ocorreu um erro inesperado ao se cadastrar no sistema");
+              alert("Ocorreu um erro inesperado ao acessar o sistema");
             }
             this.clearFormFields();
           });

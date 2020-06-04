@@ -7,6 +7,7 @@ import Home from './views/home/Home.vue'
 import Register from './views/register/Register.vue'
 import Login from './views/login/Login.vue'
 import axios from 'axios'
+import authService from './services/authService'
 
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 Vue.use(VueRouter);
@@ -15,11 +16,18 @@ Vue.prototype.$http = axios
 
 const routes = [
   { path: '/register', component: Register },
-  { path: '/login', component: Login },
+  { 
+    path: '/login',
+    component: Login,
+    beforeEnter: (to, from, next) => {
+      authService.logout();
+      next();
+    } 
+  },
   {
     path: '/', component: Home,
     beforeEnter: (to, from, next) => {
-      if (sessionStorage.getItem('email')) {
+      if (authService.isLogged()) {
         next();
       } else {
         next('/login');
@@ -29,7 +37,7 @@ const routes = [
   {
     path: '*', component: Home,
     beforeEnter: (to, from, next) => {
-      if (sessionStorage.getItem('email')) {
+      if (authService.isLogged()) {
         next();
       } else {
         next('/login');
@@ -39,7 +47,7 @@ const routes = [
   {
     path: '/session', component: NewSession,
     beforeEnter: (to, from, next) => {
-      if (sessionStorage.getItem('email')) {
+      if (authService.isLogged()) {
         next();
       } else {
         next('/login');
@@ -50,7 +58,7 @@ const routes = [
   {
     path: '/session/:id', component: EditSession.$http,
     beforeEnter: (to, from, next) => {
-      if (sessionStorage.getItem('email')) {
+      if (authService.isLogged()) {
         next();
       } else {
         next('/login');
