@@ -21,7 +21,7 @@
           </div>
 
           <div class="form-footer">
-            <button v-on:click="login()" class="btn btn-primary btn-form">Login</button>
+            <button type="button" v-on:click="login()" class="btn btn-primary btn-form">Login</button>
             <div class="not-registered">
               <p class="not-registered-text">Não possui cadastro?</p>
               <router-link class="btn btn-primary" to="/register">Cadastrar</router-link>
@@ -51,6 +51,7 @@ export default {
 
   methods: {
     login: function() {
+      debugger;
       if (this.isFormValid()) {
         const user = this.createRequestBodyNewUser();
         this.$http
@@ -62,7 +63,8 @@ export default {
             this.$router.push("/");
           })
           .catch((err) => {
-            if (err.response.status == 422) {
+            debugger;
+            if (err.response && err.response.status == 422) {
               this.tratarErroValidacao(err.response.data);
             } else {
               alert("Ocorreu um erro inesperado ao acessar o sistema");

@@ -4,6 +4,7 @@
 <script>
 import Session from '../../components/session/Session';
 import Transcriptor from '../../services/transcriptorService';
+import authService from '../../services/authService';
 export default {
   name: 'NewSession',
   components: {
@@ -16,6 +17,7 @@ export default {
         speechSample: '',
         annotation: '',
       },
+      user: authService.getUserLogged(),
     };
   },
   methods: {
@@ -52,6 +54,7 @@ export default {
     },
     createRequestBodyNewSession() {
       return {
+        _idUser: this.user._id,
         name: this.session.name,
         speechSample: this.session.speechSample,
         annotation: this.session.annotation,
