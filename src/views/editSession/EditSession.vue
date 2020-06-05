@@ -4,7 +4,7 @@
 <script>
 import Session from '../../components/session/Session';
 import Transcriptor from '../../services/transcriptorService';
-
+import authService from '../../services/authService';
 export default {
   name: 'EditSession',
   components: {
@@ -17,6 +17,7 @@ export default {
         speechSample: '',
         annotation: '',
       },
+      user: authService.getUserLogged(),
     };
   },
   beforeMount: async function() {
@@ -58,6 +59,7 @@ export default {
     },
     createRequestBodyEditSession() {
       return {
+        _idUser: this.user._id,
         _id: this.session._id,
         name: this.session.name,
         speechSample: this.session.speechSample,
