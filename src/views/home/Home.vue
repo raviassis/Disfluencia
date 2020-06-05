@@ -42,7 +42,7 @@ export default {
         };
     },
     beforeMount: async function () {
-        this.sessions = (await this.$http.get('/sessions/')).data;
+        this.sessions = (await this.$http.get(`/sessions?_idUser=${this.user._id}`)).data;
     },
     methods: {},
 }
