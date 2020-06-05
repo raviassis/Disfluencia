@@ -56,7 +56,7 @@ const routes = [
     }
   },
   {
-    path: '/session/:id', component: EditSession.$http,
+    path: '/session/:id', component: EditSession,
     beforeEnter: (to, from, next) => {
       if (authService.isLogged()) {
         next();
