@@ -14,11 +14,16 @@
             <div class="col">
                 <div class="card">
                     <div class="card-body">
-                        <h2 class="card-title">Sessões</h2>
-                        <router-link class="btn btn-primary" to="/session">Nova Sessão</router-link>
+                        <div class="flex">
+                            <h2 class="card-title">Sessões</h2>
+                            <div><router-link class="btn btn-primary" to="/session">Nova Sessão</router-link></div>
+                        </div>
+                        <div class="form-group">
+                            <input v-model="search" v-on:input="searchSession" type="text" class="form-control" placeholder="Pesquisar sessão">
+                        </div>
                         <ul class="list-group list-group-flush">
                             <router-link 
-                                v-for="session in sessions"
+                                v-for="session in sessionsFiltered"
                                 :key="session._id" 
                                 :to="'/session/' + session._id" 
                                 class="list-group-item">{{session.name}}</router-link>
@@ -38,13 +43,30 @@ export default {
     data: function() {
         return {
             sessions: [],
+            sessionsFiltered: [],
             user: authService.getUserLogged(),
+            search: '',
         };
     },
     beforeMount: async function () {
-        this.sessions = (await this.$http.get(`/sessions?_idUser=${this.user._id}`)).data;
+        this.sessionsFiltered = this.sessions = (await this.$http.get(`/sessions?_idUser=${this.user._id}`)).data;
     },
-    methods: {},
+    methods: {
+        normalize(str) {
+            return str.normalize("NFKD").replace(/[^\w]/g, '');
+        },
+        searchSession: function () {
+            if (!this.search) {
+                this.sessionsFiltered = this.sessions;
+                return;
+            }
+            const regex = new RegExp(this.normalize(this.search), "i");
+            this.sessionsFiltered = this.sessions
+                                            .filter(
+                                                session => this.normalize(session.name).search(regex) >= 0 
+                                            );
+        }
+    },
 }
 
 </script>
